@@ -12,7 +12,7 @@ socket = TCPServer.new(ENV['HOST'], ENV['PORT'])
 
 def handle_request(request_text, client)
   request  = Request.new(request_text)
-  path = request.path
+  path = ".#{request.path}"
   p request
 
   response = if path == '/'
@@ -29,13 +29,12 @@ end
 
 def file_response(path)
   # p path
-  file = File.open(".#{path}")
+  file = File.open(path)
   file_data = file.read
   file.close
 
-  ext = File.extname(path)
-  mime_type = MIME::Types.type_for(ext)
-  content_type = "Content-Type: #{mime_type.first.content_type}"
+  mime_type = `file -b --mime-type #{path}`.chomp
+  content_type = "Content-Type: #{mime_type}"
   # puts "#{client.peeraddr[3]} #{request.path}"
 
   Response.new(code: 200, data: file_data, headers: [content_type])
