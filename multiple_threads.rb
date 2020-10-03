@@ -2,7 +2,7 @@
 # head -c 100000 /dev/urandom > section_one/ostechnix_big.txt
 
 require 'socket'
-require 'mime/types'
+# require 'mime/types'
 
 require './lib/response'
 require './lib/request'
@@ -13,23 +13,42 @@ socket = TCPServer.new(ENV['HOST'], ENV['PORT'])
 def handle_request(request_text, client)
   request  = Request.new(request_text)
   path = request.path
+  p request
+
+  
+  
+
+  response = if path == '/'
+               Response.new(code: 200, data: 'Hello world!')
+             else
+               file_response(path)
+             end
+    
+
+  response.send(client)
+
+  client.shutdown
+end
+
+def file_response(path)
+  file = File.open(".#{path}")
+  file_data = file.read
+  file.close
 
   file = File.open(".#{path}")
   file_data = file.read
   file.close
   
   type = File.extname(path)
-  puts MIME::Types.type_for('css')
-  puts MIME::Types.type_for(type)
+  # puts MIME::Types.type_for('css')
+  # puts MIME::Types.type_for(type)
   content_type = "Content-Type: #{type}"
   # puts "#{client.peeraddr[3]} #{request.path}"
-  # p request
 
-  response = Response.new(code: 200, data: file_data, headers: [content_type])
+  Response.new(code: 200, data: file_data, headers: [content_type])
+rescue => e
 
-  response.send(client)
-
-  client.shutdown
+  Response.new(code: 404, data: 'File not found')
 end
 
 def handle_connection(client)
