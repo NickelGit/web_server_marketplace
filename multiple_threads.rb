@@ -2,6 +2,8 @@
 # head -c 100000 /dev/urandom > section_one/ostechnix_big.txt
 
 require 'socket'
+require 'mime/types'
+
 require './lib/response'
 require './lib/request'
 MAX_EOL = 2
@@ -11,17 +13,19 @@ socket = TCPServer.new(ENV['HOST'], ENV['PORT'])
 def handle_request(request_text, client)
   request  = Request.new(request_text)
   path = request.path
-  dirname = File.basename(Dir.getwd)
-  
+
   file = File.open(".#{path}")
   file_data = file.read
   file.close
   
-  
+  type = File.extname(path)
+  puts MIME::Types.type_for('css')
+  puts MIME::Types.type_for(type)
+  content_type = "Content-Type: #{type}"
   # puts "#{client.peeraddr[3]} #{request.path}"
   # p request
 
-  response = Response.new(code: 200, data: file_data)
+  response = Response.new(code: 200, data: file_data, headers: [content_type])
 
   response.send(client)
 

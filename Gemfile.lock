@@ -1,0 +1,18 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    mime-types (3.3.1)
+      mime-types-data (~> 3.2015)
+    mime-types-data (3.2020.0512)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  mime-types
+
+RUBY VERSION
+   ruby 2.7.1p83
+
+BUNDLED WITH
+   2.1.4
