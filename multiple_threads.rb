@@ -10,9 +10,18 @@ socket = TCPServer.new(ENV['HOST'], ENV['PORT'])
 
 def handle_request(request_text, client)
   request  = Request.new(request_text)
-  puts "#{client.peeraddr[3]} #{request.path}"
+  path = request.path
+  dirname = File.basename(Dir.getwd)
+  
+  file = File.open(".#{path}")
+  file_data = file.read
+  file.close
+  
+  
+  # puts "#{client.peeraddr[3]} #{request.path}"
+  # p request
 
-  response = Response.new(code: 200, data: "Hello, world!")
+  response = Response.new(code: 200, data: file_data)
 
   response.send(client)
 
