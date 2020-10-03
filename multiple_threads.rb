@@ -2,7 +2,7 @@
 # head -c 100000 /dev/urandom > section_one/ostechnix_big.txt
 
 require 'socket'
-# require 'mime/types'
+require 'mime/types'
 
 require './lib/response'
 require './lib/request'
@@ -28,6 +28,7 @@ def handle_request(request_text, client)
 end
 
 def file_response(path)
+  # p path
   file = File.open(".#{path}")
   file_data = file.read
   file.close
@@ -38,9 +39,14 @@ def file_response(path)
   # puts "#{client.peeraddr[3]} #{request.path}"
 
   Response.new(code: 200, data: file_data, headers: [content_type])
-rescue => e
+rescue Exception => e
+  puts "Error: #{e}"
+ 
+  code = 500
+  code = 403 if e.class == Errno::EACCES
+  code = 404 if e.class == Errno::ENOENT
 
-  Response.new(code: 404, data: 'File not found')
+  Response.new(code: code, data: e.message)
 end
 
 def handle_connection(client)
