@@ -17,11 +17,10 @@ def handle_request(request_text, client)
   file = File.open(".#{path}")
   file_data = file.read
   file.close
-  
-  type = File.extname(path)
-  puts MIME::Types.type_for('css')
-  puts MIME::Types.type_for(type)
-  content_type = "Content-Type: #{type}"
+
+  ext = File.extname(path)
+  mime_type = MIME::Types.type_for(ext)
+  content_type = "Content-Type: #{mime_type.first.content_type}"
   # puts "#{client.peeraddr[3]} #{request.path}"
   # p request
 
